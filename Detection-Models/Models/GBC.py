@@ -67,7 +67,7 @@ class_weight_dict = dict(zip(classes, weights))
 
 # Build improved model
 model = GradientBoostingClassifier(
-    learning_rate=0.01,         # lower learning rate
+    learning_rate=1,         # lower learning rate
     n_estimators=300,           # more trees for accuracy
     max_depth=8,
     min_samples_split=5,

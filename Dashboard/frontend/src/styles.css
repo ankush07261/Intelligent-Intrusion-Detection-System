@@ -35,6 +35,15 @@ body {
   gap: 1rem;
 }
 
+.nav-button{
+  background-color: #0f3d3d !important;
+  cursor: pointer;
+}
+
+.nav-button:hover{
+  background-color:rgb(19, 76, 76) !important;
+}
+
 .login-form label {
   text-align: left;
   font-weight: 500;

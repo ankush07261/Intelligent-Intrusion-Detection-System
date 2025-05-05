@@ -22,7 +22,8 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h1>CyberThreat Intelligence</h1>
+      <h1>Intelligent IDS</h1>
+      {/* <h1>CyberThreat Intelligence</h1> */}
       <div className="login-box">
         <h2 className="login-title">Login</h2>
         <input
@@ -43,6 +44,7 @@ const Login = () => {
           Login
         </button>
       </div>
+      {/* new user? Register */}
     </div>
   );
 };

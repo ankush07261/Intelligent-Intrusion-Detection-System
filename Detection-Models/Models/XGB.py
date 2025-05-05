@@ -75,7 +75,7 @@ class_weight_dict = dict(zip(classes, weights))
 
 # Build improved model
 model = XGBClassifier(
-    learning_rate=0.01,
+    learning_rate=1,
     n_estimators=300,
     max_depth=120,
     subsample=0.8,

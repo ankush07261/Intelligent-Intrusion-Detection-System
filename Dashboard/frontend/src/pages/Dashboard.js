@@ -121,7 +121,13 @@ const Dashboard = () => {
               </thead>
               <tbody>
                 {threats.map((t, i) => (
-                  <tr key={i} className="threat-row">
+                  <tr key={i} className="threat-row"
+                  style={
+                    ["DOS", "SQLI", "BruteForce"].includes(t.prediction)
+                      ? { backgroundColor: "#8b0000" }
+                      : {}
+                  }
+                  >
                     <td className="tstd">{t.timestamp}</td>
                     <td className="siptd">{t.source_ip}</td>
                     <td className="td">{t.destination_ip}</td>

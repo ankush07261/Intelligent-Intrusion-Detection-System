@@ -3,7 +3,8 @@ import "../styles.css";
 
 const Header = ({ onAddUser, onLogout }) => (
   <div className="header-bar">
-    <h1 className="header-title">CyberThreat Intelligence</h1>
+    {/* <h1 className="header-title">CyberThreat Intelligence</h1> */}
+    <h1 className="header-title">Intelligent IDS</h1>
     <div>
       <button onClick={onAddUser} className="btn add-user-button">
         Add User
