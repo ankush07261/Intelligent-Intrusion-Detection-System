@@ -120,7 +120,8 @@ Dashboard/  <br/>
     <li>Python 3.10.0</li>
     <li>NodeJS</li>
     <li>MySQL</li>
-  </ul> <br/>
+    <li>Wireshark and T-shark</li>
+  </ul> 
 
   <h3>1. Clone the Repo:</h3>
     a. Open the terminal in the directory of your choice,</li><br/>
