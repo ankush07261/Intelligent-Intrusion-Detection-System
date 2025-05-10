@@ -66,16 +66,142 @@
 </ul>
 
 <h2>🌐 Project Structure:</h2>
-<p>will be updated soon...</p>
+Dashboard/  <br/>
+├── backend/  <br/>
+│   ├── convert.py  <br/>
+│   ├── db_utils.py  <br/>
+│   ├── extract.py  <br/>
+│   ├── login.py  <br/>
+│   ├── main.py  <br/>
+│   ├── realtime_predict.py  <br/>
+│   ├── registration.py  <br/>
+│   └── requirements.txt  <br/>
+│  <br/>
+├── frontend/  <br/>
+│   ├── public/  <br/>
+│   └── src/  <br/>
+│       ├── components/  <br/>
+│       │   ├── AddUserModal.js  <br/>
+│       │   └── Header.js  <br/>
+│       ├── pages/  <br/>
+│       │   ├── Dashboard.js  <br/>
+│       │   ├── Login.js  <br/>
+│       │   └── Register.js  <br/>
+│       ├── services/  <br/>
+│       │   ├── ProtectedRoute.js  <br/>
+│       │   └── api.js  <br/>
+│       ├── App.css  <br/>
+│       ├── App.js  <br/>
+│       ├── App.test.js  <br/>
+│       ├── index.css  <br/>
+│       ├── index.js  <br/>
+│       ├── logo.svg  <br/>
+│       ├── reportWebVitals.js  <br/>
+│       ├── setupTests.js  <br/>
+│       ├── styles.css  <br/>
+│       └── utils.js  <br/>
+ <br/>
+├── Detection-Models/  <br/>
+│   ├── data/  <br/>
+│   │   └── training_data.csv  <br/>
+│   └── Models/  <br/>
+│       ├── GBC.py  <br/>
+│       ├── RFC.py  <br/>
+│       ├── XGB.py  <br/>
+│       ├── captureNetworkTraffic.py  <br/>
+│       └── predict.py  <br/>
+│  <br/>
+├── .gitignore  <br/>
+└── README.md  
 
-<h2>🌱 Implement in your PC:</h2>
-<p>will be updated soon...</p>
+<h2>🌱 Set it up in your System:</h2>
+<h3>Requirements:</h3>
+  <ul>
+    <li>Python 3.10.0</li>
+    <li>NodeJS</li>
+    <li>MySQL</li>
+    <li>Wireshark and T-shark</li>
+  </ul> 
+
+  <h3>1. Clone the Repo:</h3>
+    a. Open the terminal in the directory of your choice,</li><br/>
+    b. copy and paste the below command: <br/>
+    
+      git clone https://github.com/ankush07261/Intelligent-Intrusion-Detection-System.git
+
+  <h3>2. Set up the environment:</h3>
+    a. Navigate inside the project directory
+
+      cd Intelligent-Intrusion-Detection-System
+
+  b. Navigate to backend
+
+     cd Dashboard/backend
+
+  c. Create a virtual env:
+  
+     python -m venv venv
+
+d. Activate the venv:
+
+    venv\Scripts\activate
+
+e.  Install dependencies
+
+    python install -r requirements.txt
+
+f. now, open a terminal in the root project folder and navigate to frontend dir:
+
+    cd Dashboard/backend
+
+g. Install node modules in the frontend folder:
+
+    npm i
+
+h. Open a new terminal in the root project folder and navigate to Detection-Models:
+
+    cd Dashboard/Detection-Models
+
+i. Install dependecies again to run the models:
+
+    python install -r requirements.txt
+
+<h2>🚅 Running the software:</h2>
+
+First, replace "<your_password>" in the method get_db() with your mysql password in the following files:
+<ul>
+  <li>db_utils.py</li>
+  <li>convert.py</li>
+  <li>login.py</li>
+  <li>realtime_predict.py</li>
+  <li>registration.py</li>
+</ul>
+Then... <br/><br/>
+a. Open terminal in Detection-Models and run any of the 3 models (Train the models).<br/>
+b. 4 .pkl files will be created, copy these pkl files and paste them in the backend folder (This is an important step). <br/>
+c. You can capture your network traffic by running the captureNetworkTraffic.py file and test the model by running the predict.py file.<br/><br/>
+Command to run a pyton file (replace "filename" with the name of the file you want to run in the below command):<br/>
+
+    python filename.py
+
+Open two terminals in the backend folder and run the below commands in each of the terminals (with venv activated) to capture the real time network traffic and predict the packets flowing:
+
+    uvicorn main:app --reload
+and
+
+    python realtime_predict.py
+
+Now, open a terminal in the frontend dir and enter the below command:
+
+    npm start
+
+The dashboard UI will start on automatically on your default web browser on the port 3000. If not, open a browser and browse "localhost:3000"<br/>
+Now you may register yourself and login to view the dashboard.
 
 <h2>📈 Future Enhancements</h2>
 <ul>
   <li>Increasing model accuracy</li>
   <li>Multi-user roles (admin/analyst)</li>
-  <li>Integration with threat intelligence feeds (STIX/TAXII)</li>
   <li>Alert system via email or Slack</li>
   <li>Dockerized deployment</li>
 </ul>
