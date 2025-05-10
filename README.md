@@ -195,8 +195,8 @@ Now, open a terminal in the frontend dir and enter the below command:
 
     npm start
 
-The dashboard UI will start on automatically on your default web browser on the port 3000. If not, open a browser and browse "localhost:3000"<br/>
-Now you may register yourself and login to view the dashboard.
+The dashboard UI will start on automatically on your default web browser on the port 3000. If not, open a browser and browse "localhost:3000"<br/><br/>
+Now you may register yourself and login to view the dashboard (unauthorized registration of a new user will be implemented soon).
 
 <h2>📈 Future Enhancements</h2>
 <ul>
