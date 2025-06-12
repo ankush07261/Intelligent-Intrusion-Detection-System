@@ -198,6 +198,14 @@ Now, open a terminal in the frontend dir and enter the below command:
 The dashboard UI will start on automatically on your default web browser on the port 3000. If not, open a browser and browse "localhost:3000"<br/><br/>
 Now you may register yourself and login to view the dashboard (unauthorized registration of a new user will be implemented soon).
 
+<h2>🐋 Running the project using docker image:</h2>
+Pull the docker image and run:
+
+    docker pull ankus263/intelligent-intrusion-detection-system:latest
+and then:
+
+    docker run -p 5000:5000 ankus263/intelligent-intrusion-detection-system:latest
+
 <h2>📈 Future Enhancements</h2>
 <ul>
   <li>Increasing model accuracy</li>
