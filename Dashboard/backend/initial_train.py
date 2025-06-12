@@ -1,97 +1,102 @@
 import pandas as pd
 import joblib
 import numpy as np
-from xgboost import XGBClassifier, plot_importance
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay, f1_score
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.utils.class_weight import compute_class_weight
-from imblearn.over_sampling import SMOTE
 import matplotlib.pyplot as plt
 
 # Load data
-df = pd.read_csv("Detection-Models/data/training_data.csv")
+df = pd.read_csv("training_data.csv")
+
+# Drop rows where header is repeated or packet_size has garbage values
 df = df[df['packet_size'] != 'packet_size']
 df['packet_size'] = pd.to_numeric(df['packet_size'], errors='coerce')
+
+# Drop rows with NaNs
 df.dropna(inplace=True)
 
+# Required columns
 required_columns = ['timestamp', 'source_ip', 'destination_ip', 'protocol', 'packet_size',
-                    'src_port', 'dst_port', 'tcp_flags', 'ttl', 'http_host', 'http_uri', 'tls_sni', 'Label']
+                    'src_port', 'dst_port', 'tcp_flags', 'ttl', 'Label']
 
+# Check for missing columns
 missing_cols = [col for col in required_columns if col not in df.columns]
 if missing_cols:
     raise ValueError(f"Missing required columns in dataset: {missing_cols}")
 
+# Filter and reorder
 df = df[required_columns]
 
+# Convert problematic columns to numeric
 df['src_port'] = pd.to_numeric(df['src_port'], errors='coerce')
 df['dst_port'] = pd.to_numeric(df['dst_port'], errors='coerce')
 df['ttl'] = pd.to_numeric(df['ttl'], errors='coerce')
+
+# Drop any remaining NaNs after conversion
 df.dropna(inplace=True)
 
+# Encode IPs
 ip_encoder = LabelEncoder()
 df['source_ip'] = ip_encoder.fit_transform(df['source_ip'])
 df['destination_ip'] = ip_encoder.fit_transform(df['destination_ip'])
 
+# Encode protocol
 protocol_encoder = LabelEncoder()
 df['protocol'] = protocol_encoder.fit_transform(df['protocol'])
 
+# Encode TCP flags
 flags_encoder = LabelEncoder()
 df['tcp_flags'] = flags_encoder.fit_transform(df['tcp_flags'])
 
+# Encode labels
 label_encoder = LabelEncoder()
 df['Label'] = label_encoder.fit_transform(df['Label'])
 
-for col in ['http_host', 'http_uri', 'tls_sni']:
-    df[col] = df[col].fillna('unknown')
-    enc = LabelEncoder()
-    df[col] = enc.fit_transform(df[col])
-    joblib.dump(enc, f'Detection-Models/Models/{col}_encoder.pkl')
+# Save encoders
+joblib.dump(ip_encoder, 'ip_encoder.pkl')
+joblib.dump(protocol_encoder, 'protocol_encoder.pkl')
+joblib.dump(flags_encoder, 'flags_encoder.pkl')
+joblib.dump(label_encoder, 'label_encoder.pkl')
 
-joblib.dump(ip_encoder, 'Detection-Models/Models/ip_encoder.pkl')
-joblib.dump(protocol_encoder, 'Detection-Models/Models/protocol_encoder.pkl')
-joblib.dump(flags_encoder, 'Detection-Models/Models/flags_encoder.pkl')
-joblib.dump(label_encoder, 'Detection-Models/Models/label_encoder.pkl')
-
+# Features and labels
 X = df.drop(['Label', 'timestamp'], axis=1)
 y = df['Label']
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42, stratify=y
-)
+# Train-test split (no SMOTE)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
-# ✅ Apply SMOTE to oversample rare classes
-smote = SMOTE(random_state=42)
-X_train_res, y_train_res = smote.fit_resample(X_train, y_train)
-
-# Recompute class weights on balanced data
-classes = np.unique(y_train_res)
-weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train_res)
+# Compute class weights
+classes = np.unique(y)
+weights = compute_class_weight(class_weight='balanced', classes=classes, y=y)
 class_weight_dict = dict(zip(classes, weights))
 
-# ✅ Build improved XGBoost model with better hyperparameters
+# Build improved model
 model = XGBClassifier(
-    learning_rate=0.1,
-    n_estimators=500,
-    max_depth=8,
+    learning_rate=1,
+    n_estimators=300,
+    max_depth=120,
     subsample=0.8,
     colsample_bytree=0.8,
-    min_child_weight=3,
-    gamma=0.3,
     scale_pos_weight=1,
-    use_label_encoder=False,
-    eval_metric='mlogloss',
+    use_label_encoder=True,
+    eval_metric='logloss',
     random_state=42,
     n_jobs=-1
 )
 
-model.fit(X_train_res, y_train_res)
+# Train model
+model.fit(X_train, y_train)
 
+# Predict
 y_pred = model.predict(X_test)
 
+# Evaluate
 print("Classification Report:\n", classification_report(y_test, y_pred, target_names=label_encoder.classes_))
-print("F1 Score (macro):", f1_score(y_test, y_pred, average='macro'))
 
+# Confusion Matrix
 cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label_encoder.classes_)
 disp.plot(xticks_rotation=45)
@@ -99,10 +104,6 @@ plt.title("Confusion Matrix")
 plt.tight_layout()
 plt.show()
 
-plot_importance(model, max_num_features=10)
-plt.title("Top 10 Important Features")
-plt.tight_layout()
-plt.show()
-
-joblib.dump(model, 'Detection-Models/Models/attack_detector_model.pkl')
+# Save model
+joblib.dump(model, 'attack_detector_model.pkl')
 print("Model and encoders saved successfully.")

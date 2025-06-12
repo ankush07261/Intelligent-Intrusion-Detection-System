@@ -1,24 +1,27 @@
 import mysql.connector
+from config import HOST, USER, PASS, DB, TABLE1
 
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="<your_password>",
-        database="project"
+        host=HOST,
+        user=USER,
+        password=PASS,
+        database=DB
     )
 
 def insert_prediction(prediction):
     try:
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("""
-            INSERT INTO predictions (
+        query = f"""
+            INSERT INTO {TABLE1} (
                 timestamp, source_ip, destination_ip, protocol, packet_size,
                 src_port, dst_port, tcp_flags, ttl,
                 http_host, http_uri, tls_sni, full_url, prediction
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
+        """
+        
+        cursor.execute(query, (
             prediction["timestamp"],
             prediction["source_ip_raw"],
             prediction["destination_ip_raw"],

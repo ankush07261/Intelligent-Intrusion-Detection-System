@@ -1,13 +1,14 @@
 import mysql.connector
 from datetime import datetime
 
-# MySQL Database connection
+from config import HOST, USER, PASS, DB, TABLE1
+
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="<your_password>",
-        database="project"
+        host=HOST,
+        user=USER,
+        password=PASS,
+        database=DB
     )
 
 def format_local_time(timestamp_val):
@@ -53,7 +54,7 @@ def get_predictions(page: int, page_size: int):
         
         # Fetch most recent entries first using ORDER BY (descending)
         cursor.execute(f"""
-            SELECT * FROM predictions
+            SELECT * FROM {TABLE1}
             ORDER BY id DESC
             LIMIT {page_size} OFFSET {offset}
         """)

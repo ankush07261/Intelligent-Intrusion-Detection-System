@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import AddUserModal from "../components/AddUserModal";
-import { getPredictions } from "../api";
+import AlertBox from "../components/AlertBox";
+import { getPredictions , retrainModel } from "../api";
 import { getToken, removeToken } from "../utils";
 import { useNavigate } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import html2pdf from "html2pdf.js";
 import "../styles.css";
-import "../css/dashboard.css";
+// import "../css/dashboard.css";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -15,10 +16,12 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Dashboard = () => {
   const [threats, setThreats] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showMessageBox, setShowMessageBox] = useState(false);
+
   const [page, setPage] = useState(1);
   const [allThreats, setAllThreats] = useState([]);
 
-  const pageSize = 500;
+  const pageSize = 200;
   const navigate = useNavigate();
 
   const fetchData = async (pageNum) => {
@@ -64,7 +67,7 @@ const Dashboard = () => {
     const interval = setInterval(() => {
       fetchData(page);
       fetchAllData();
-    }, 10000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [page]);
@@ -74,7 +77,7 @@ const Dashboard = () => {
     datasets: [
       {
         data: Object.values(
-          allThreats.reduce((acc, t) => {
+          allThreats.reduce((acc, t) => { 
             acc[t.prediction] = (acc[t.prediction] || 0) + 1;
             return acc;
           }, {})
@@ -89,15 +92,33 @@ const Dashboard = () => {
     html2pdf().from(element).save("threat-report.pdf");
   };
 
+  const handleRetrain = async () => {
+  const token = getToken();
+  if (!token) return navigate("/");
+  try {
+    await retrainModel(token);
+    setShowMessageBox(true);
+  } catch {
+    alert("Model retraining failed.");
+  }
+};
+
+
   const logout = () => {
     removeToken();
     navigate("/");
   };
-
   return (
     <div className="dashboard-container">
-      <Header onAddUser={() => setShowModal(true)} onLogout={logout} />
+      <Header onAddUser={() => setShowModal(true)} onLogout={logout} handleRetrain={handleRetrain}/>
       {showModal && <AddUserModal onClose={() => setShowModal(false)} />}
+      {showMessageBox && (
+      <AlertBox
+        title="Model Retrained"
+        message="The model was retrained successfully."
+        onClose={() => setShowMessageBox(false)}
+      />
+      )}
       <div
         className={showModal ? "blurred" : "dashboard-content"}
         id="dashboard-content"
@@ -123,7 +144,7 @@ const Dashboard = () => {
                 {threats.map((t, i) => (
                   <tr key={i} className="threat-row"
                   style={
-                    ["DOS", "SQLI", "BruteForce"].includes(t.prediction)
+                    ["DOS", "SQLI", "BruteForce", "BRUTEFORCE"].includes(t.prediction)
                       ? { backgroundColor: "#8b0000" }
                       : {}
                   }

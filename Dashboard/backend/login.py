@@ -4,11 +4,8 @@ from passlib.hash import bcrypt
 from jose import JWTError, jwt
 import mysql.connector
 import datetime
-
+from config import HOST, USER, PASS, DB, TABLE2, SECRET_KEY, ALGORITHM
 router = APIRouter()
-
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
 
 class UserLogin(BaseModel):
     username: str
@@ -16,10 +13,10 @@ class UserLogin(BaseModel):
 
 def get_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="<your_password>",
-        database="project"
+        host=HOST,
+        user=USER,
+        password=PASS,
+        database=DB
     )
 
 @router.post("/login")
@@ -27,7 +24,7 @@ def login(user: UserLogin):
     db = get_db()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE username = %s", (user.username,))
+    cursor.execute(f"SELECT * FROM {TABLE2} WHERE username = %s", (user.username,))
     result = cursor.fetchone()
 
     cursor.close()
@@ -38,5 +35,6 @@ def login(user: UserLogin):
 
     expiration = datetime.datetime.utcnow() + datetime.timedelta(hours=2)
     token = jwt.encode({"sub": user.username, "exp": expiration}, SECRET_KEY, algorithm=ALGORITHM)
+
 
     return {"access_token": token, "token_type": "bearer"}

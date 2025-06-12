@@ -11,3 +11,8 @@ export const getPredictions = (token, page = 1, pageSize = 500) =>
   axios.get(`${API_BASE}/predictions?page=${page}&page_size=${pageSize}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+export const retrainModel = (token) =>
+  axios.post(`${API_BASE}/manual_retrain`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });

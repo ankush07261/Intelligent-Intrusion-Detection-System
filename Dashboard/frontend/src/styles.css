@@ -35,6 +35,15 @@ body {
   gap: 1rem;
 }
 
+.pagination-controls{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  align-items: center;
+  padding-top: 1rem;
+}
+
 .nav-button{
   background-color: #0f3d3d !important;
   cursor: pointer;
